@@ -4,8 +4,6 @@ on:
   push:
     branches:    
       - 'master'
-    paths:
-      - 'infrastructure/**'
 
 jobs:
   build-and-deploy:
