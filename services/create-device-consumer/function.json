@@ -1,0 +1,12 @@
+{
+  "bindings": [
+    {
+      "name": "mySbMsg",
+      "type": "serviceBusTrigger",
+      "direction": "in",
+      "queueName": "sbq-vnext-device",
+      "connection": "https://sb-vnext-device.servicebus.windows.net/sbq-vnext-device"
+    }
+  ],
+  "scriptFile": "../dist/create-device-consumer/index.js"
+}
