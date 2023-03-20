@@ -3,7 +3,7 @@ param organization string = 'vnext-device'
 
 // Functions
 module functions 'module/functions.bicep' = {
-  name: 'fn-${organization}'
+  name: 'resource-fn-${organization}'
   params: {
     appInsightsLocation: location
     location: location
@@ -11,7 +11,14 @@ module functions 'module/functions.bicep' = {
   }
 }
 
-// Service Bus
+// Logic Apps
+module logicapps 'module/logicapp.bicep' = {
+  name: 'resource-logicapps-${organization}'
+  params: {
+    logicAppName: 'logicapps-${organization}'
+    location: location
+  }
+}
 
 
 output results object = {
