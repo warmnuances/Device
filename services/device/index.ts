@@ -28,7 +28,7 @@ const httpTrigger: AzureFunction = async function (
       ssl: {
         rejectUnauthorized: false,
         ca: [
-          readFileSync("/var/www/html/BaltimoreCyberTrustRoot.crt.pem", "utf8"),
+          readFileSync("/local/var/www/html/BaltimoreCyberTrustRoot.crt.pem", "utf8"),
         ],
       },
     },
