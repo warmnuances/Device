@@ -1,5 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import { type Knex } from "knex";
+import { knex, Knex } from "knex";
+import { readFileSync } from "fs";
 
 interface Device {
   deviceId: string;
@@ -13,15 +14,25 @@ const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
 ): Promise<void> {
-  const DB_URL = process.env["ConnectionStrings:DB_URL"];
 
-  const db: Knex = require("knex")({
-    client: "mysql2",
-    connection: DB_URL,
+  context.log("ssl dir", __dirname);
+
+  const db: Knex = knex({
+    client: "mysql",
+    connection: {
+      host: process.env["ConnectionStrings:DB_HOST"],
+      password: process.env["ConnectionStrings:DB_PASSWORD"],
+      user: process.env["ConnectionStrings:DB_USER"],
+      database: process.env["ConnectionStrings:DB_NAME"],
+      port: 3306, 
+      ssl: {
+        rejectUnauthorized: false,
+        ca: [
+          readFileSync("/var/www/html/BaltimoreCyberTrustRoot.crt.pem", "utf8"),
+        ],
+      },
+    },
   });
-
-  context.log("DB_URL", DB_URL);
-  context.log("method", req.method);
 
   try {
     switch (req.method) {
@@ -30,6 +41,15 @@ const httpTrigger: AzureFunction = async function (
 
       case "POST":
         context.log(req.body);
+        if (!req.body?.devices) {
+          context.res = {
+            body: "Bad Request",
+            status: 400,
+          };
+        }
+
+        const { devices } = req.body;
+        await createDevice({ db, devices });
 
         context.res = {
           ...req.body,
@@ -50,7 +70,7 @@ const httpTrigger: AzureFunction = async function (
   }
 };
 
-async function createDevice({ devices, db }: { db: Knex; devices: Device[] }) {
+async function createDevice({ db, devices }: { db: Knex; devices: Device[] }) {
   await db.insert(devices).into("device");
 }
 
