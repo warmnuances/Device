@@ -13,6 +13,7 @@ module dbvnetMod 'module/functions.bicep' = {
 
 // Service Bus
 
+
 output results object = {
   rgId: resourceGroup().id
 }
