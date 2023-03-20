@@ -2,12 +2,12 @@ param location string = resourceGroup().location
 param organization string = 'vnext-device'
 
 // Functions
-module dbvnetMod 'module/functions.bicep' = {
-  name: 'dbvnetMod'
+module functions 'module/functions.bicep' = {
+  name: 'fn-${organization}'
   params: {
     appInsightsLocation: location
     location: location
-    appName: 'device'
+    appName: 'fn-app-${organization}'
   }
 }
 
