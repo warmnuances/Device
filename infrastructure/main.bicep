@@ -31,7 +31,7 @@ module mysql 'module/mysql.bicep' = {
   params: {
     resourceNamePrefix: organization
     location: location
-    administratorLogin: 'vnext-root'
+    administratorLogin: 'vnextroot'
     administratorLoginPassword: administratorLoginPassword
   }
 }
