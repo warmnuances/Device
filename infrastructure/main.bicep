@@ -36,6 +36,15 @@ module mysql 'module/mysql.bicep' = {
   }
 }
 
+module servicebus 'module/servicebus.bicep' = {
+  name: 'resource-service-bus-${organization}'
+  params: {
+    location: location
+    serviceBusNamespaceName: 'servicebus-${organization}'
+    serviceBusQueueName: 'queue-${organization}'
+  }
+}
+
 
 output results object = {
   rgId: resourceGroup().id
