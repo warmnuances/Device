@@ -50,4 +50,5 @@ resource serviceBusConnection 'Microsoft.Web/connections@2018-07-01-preview' = {
 
 output resource object = {
   connectionId: serviceBusConnection.id
+  queueName: serviceBusQueue.name
 }

@@ -51,6 +51,7 @@ module logicapps 'workflows/registerdevice.bicep' = {
     location: location
     serviceBusConnection: servicebus.outputs.resource.connectionId
     integrationAccountId: integrationaccount.outputs.id
+    serviceBusQueueName: servicebus.outputs.resource.queueName
   }
   dependsOn: [
     servicebus

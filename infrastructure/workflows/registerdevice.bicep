@@ -1,9 +1,10 @@
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
-param workflowName string = 'register-device_workflow'
-param integrationAccountId string = '/subscriptions/2ba97194-b813-454e-bc25-42230db87847/resourceGroups/rg-vnext-device/providers/Microsoft.Logic/integrationAccounts/vnext-integration-account'
-param serviceBusConnection string = '/subscriptions/2ba97194-b813-454e-bc25-42230db87847/resourceGroups/rg-vnext-device/providers/Microsoft.Web/connections/servicebus-1'
+param workflowName string = 'register-device-workflow'
+param integrationAccountId string
+param serviceBusConnection string
+param serviceBusQueueName string
 
 resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
   name: workflowName
@@ -100,7 +101,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
             code: 'const outputAssets = workflowContext.actions.HTTP.outputs.body;\r\nconst output = workflowContext.actions.Compose.outputs;\r\nconst devices = JSON.parse(output).devices\r\nconst devicesAssetsId = outputAssets.devices\r\n\r\nconst result = devices.map(item => ({\r\n    deviceId: item.id,\r\n    location: item.id,\r\n    name: item.name,\r\n    type: item.type,\r\n    assetId: devicesAssetsId.find(d => d.deviceId === item.id).assetId\r\n}))\r\n\r\nreturn { devices: result };'
           }
         }
-        HTTP: {
+        HTTP_GET_ASSETID: {
           runAfter: {
             Execute_JavaScript_Code: [
               'Succeeded'
@@ -116,7 +117,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
             uri: 'http://tech-assessment.vnext.com.au/api/devices/assetId/'
           }
         }
-        HTTP_2: {
+        HTTP_2_SAVE_TO_DB: {
           runAfter: {
             Execute_JavaScript_Code_2: [
               'Succeeded'
@@ -145,7 +146,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
               }
             }
             method: 'post'
-            path: '/@{encodeURIComponent(encodeURIComponent(\'sbq-${workflowName}\'))}/messages'
+            path: '/@{encodeURIComponent(encodeURIComponent(\'${serviceBusQueueName}\'))}/messages'
           }
         }
         'When_a_message_is_received_in_a_queue_(auto-complete)': {
@@ -162,7 +163,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
               }
             }
             method: 'get'
-            path: '/@{encodeURIComponent(encodeURIComponent(\'sbq-${workflowName}\'))}/messages/head'
+            path: '/@{encodeURIComponent(encodeURIComponent(\'${serviceBusQueueName}\'))}/messages/head'
             queries: {
               queueType: 'Main'
             }
