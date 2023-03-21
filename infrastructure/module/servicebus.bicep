@@ -33,3 +33,21 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-01-01-prev
     enableExpress: false
   }
 }
+
+resource serviceBusConnection 'Microsoft.Web/connections@2018-07-01-preview' = {
+  location: location
+  name: '${serviceBusQueueName}-connection'
+  properties: {
+    api: {
+      id: subscriptionResourceId('Microsoft.Web/locations/managedApis', location, 'servicebus')
+    }
+    displayName: 'servicebus'
+    parameterValues: {
+      connectionString: 'https://${serviceBusNamespaceName}.servicebus.windows.net/${serviceBusQueueName}'
+    }
+  }
+}
+
+output resource object = {
+  connectionId: serviceBusConnection.id
+}

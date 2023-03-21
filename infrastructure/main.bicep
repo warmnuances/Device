@@ -16,15 +16,6 @@ module functions 'module/functions.bicep' = {
   }
 }
 
-// Logic Apps
-module logicapps 'module/logicapp.bicep' = {
-  name: 'resource-logicapps-${organization}'
-  params: {
-    logicAppName: 'logicapps-${organization}'
-    location: location
-  }
-}
-
 //Db mysql
 module mysql 'module/mysql.bicep' = {
   name: 'resource-azure-db-mysql-${organization}'
@@ -36,6 +27,14 @@ module mysql 'module/mysql.bicep' = {
   }
 }
 
+module integrationaccount 'module/integrationaccount.bicep' = {
+  name: 'resource-integration-account-${organization}'
+  params: {
+    location: location
+    name: 'integration-account-${organization}'
+  }
+}
+
 module servicebus 'module/servicebus.bicep' = {
   name: 'resource-service-bus-${organization}'
   params: {
@@ -44,6 +43,23 @@ module servicebus 'module/servicebus.bicep' = {
     serviceBusQueueName: 'queue-${organization}'
   }
 }
+
+// Logic Apps
+module logicapps 'workflows/registerdevice.bicep' = {
+  name: 'resource-logicapps-${organization}'
+  params: {
+    location: location
+    serviceBusConnection: servicebus.outputs.resource.connectionId
+    integrationAccountId: integrationaccount.outputs.id
+  }
+  dependsOn: [
+    servicebus
+    mysql
+    functions
+    integrationaccount
+  ]
+}
+
 
 
 output results object = {
