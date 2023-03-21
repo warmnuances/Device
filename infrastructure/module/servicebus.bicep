@@ -45,7 +45,7 @@ resource serviceBusConnection 'Microsoft.Web/connections@2018-07-01-preview' = {
     }
     displayName: 'servicebus'
     parameterValues: {
-      connectionString: listKeys(listKeysEndpoint, serviceBusNamespace.apiVersion).connectionStrings[0].connectionString
+      connectionString: listKeys(listKeysEndpoint, serviceBusNamespace.apiVersion).primaryConnectionString
     }
   }
   dependsOn:[
