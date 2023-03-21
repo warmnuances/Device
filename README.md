@@ -2,13 +2,13 @@
 
 
 ### Deliverables
-- Register new data in database
+- Register new data in database  
+Image of from workbench. For full data, refer to [result](out.csv).
+<img alt="Requirement 1" src="screenshots/requirement1.png"/>  
 
 
-- Registering 1000 data < 10 mins
-
-- Partial Failures
-
+- Registering 1000 data < 10 mins. 14s
+<img alt="Requirement 2" src="screenshots/requirement2.png"/>  
 
 
 
