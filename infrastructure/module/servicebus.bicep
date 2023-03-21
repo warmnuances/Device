@@ -34,6 +34,8 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-01-01-prev
   }
 }
 
+var listKeysEndpoint = '${serviceBusNamespace.id}/AuthorizationRules/RootManageSharedAccessKey'
+
 resource serviceBusConnection 'Microsoft.Web/connections@2018-07-01-preview' = {
   location: location
   name: '${serviceBusQueueName}-connection'
@@ -43,9 +45,13 @@ resource serviceBusConnection 'Microsoft.Web/connections@2018-07-01-preview' = {
     }
     displayName: 'servicebus'
     parameterValues: {
-      connectionString: 'https://${serviceBusNamespaceName}.servicebus.windows.net/${serviceBusQueueName}'
+      connectionString: listKeys(listKeysEndpoint, serviceBusNamespace.apiVersion).primaryKey
     }
   }
+  dependsOn:[
+
+    serviceBusQueue
+  ]
 }
 
 output resource object = {

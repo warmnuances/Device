@@ -3,9 +3,10 @@ param location string = resourceGroup().location
 
 param workflowName string = 'register-device-workflow'
 param integrationAccountId string
-param serviceBusConnection string
+param serviceBusConnectionId string
 param serviceBusQueueName string
 param functionAppName string
+
 
 resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
   name: workflowName
@@ -178,7 +179,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
       '$connections': {
         value: {
           servicebus: {
-            connectionId: serviceBusConnection
+            connectionId: serviceBusConnectionId
             connectionName: 'servicebus-1'
             id: '/subscriptions/2ba97194-b813-454e-bc25-42230db87847/providers/Microsoft.Web/locations/australiaeast/managedApis/servicebus'
           }

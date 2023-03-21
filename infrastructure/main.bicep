@@ -5,6 +5,10 @@ param organization string = 'vnext-device'
 @secure()
 param administratorLoginPassword string
 
+@description('Provide the connectionString for service bus.')
+@secure()
+param serviceBusConnectionString string
+
 
 // Functions
 module functions 'module/functions.bicep' = {
@@ -44,12 +48,13 @@ module servicebus 'module/servicebus.bicep' = {
   }
 }
 
+
 // Logic Apps
 module logicapps 'workflows/registerdevice.bicep' = {
   name: 'resource-logicapps-${organization}'
   params: {
     location: location
-    serviceBusConnection: servicebus.outputs.resource.connectionId
+    serviceBusConnectionId: servicebus.outputs.resource.connectionId
     integrationAccountId: integrationaccount.outputs.id
     serviceBusQueueName: servicebus.outputs.resource.queueName
     functionAppName: functions.outputs.resource.appName
