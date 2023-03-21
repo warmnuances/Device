@@ -1,6 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { knex, Knex } from "knex";
 import { readFileSync } from "fs";
+import { resolve } from "path";
 
 interface Device {
   deviceId: string;
@@ -15,21 +16,18 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
 
-  context.log("ssl dir", __dirname);
 
   const db: Knex = knex({
     client: "mysql",
     connection: {
-      host: process.env["ConnectionStrings:DB_HOST"],
-      password: process.env["ConnectionStrings:DB_PASSWORD"],
-      user: process.env["ConnectionStrings:DB_USER"],
-      database: process.env["ConnectionStrings:DB_NAME"],
+      host: process.env["DB_HOST"],
+      password: process.env["DB_PASSWORD"],
+      user: process.env["DB_USER"],
+      database: process.env["DB_NAME"],
       port: 3306, 
       ssl: {
         rejectUnauthorized: false,
-        ca: [
-          readFileSync("/local/var/www/html/BaltimoreCyberTrustRoot.crt.pem", "utf8"),
-        ],
+        ca: process.env["CACERT"],
       },
     },
   });
