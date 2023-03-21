@@ -5,6 +5,7 @@ param workflowName string = 'register-device-workflow'
 param integrationAccountId string
 param serviceBusConnection string
 param serviceBusQueueName string
+param functionAppName string
 
 resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
   name: workflowName
@@ -101,7 +102,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
             code: 'const outputAssets = workflowContext.actions.HTTP.outputs.body;\r\nconst output = workflowContext.actions.Compose.outputs;\r\nconst devices = JSON.parse(output).devices\r\nconst devicesAssetsId = outputAssets.devices\r\n\r\nconst result = devices.map(item => ({\r\n    deviceId: item.id,\r\n    location: item.id,\r\n    name: item.name,\r\n    type: item.type,\r\n    assetId: devicesAssetsId.find(d => d.deviceId === item.id).assetId\r\n}))\r\n\r\nreturn { devices: result };'
           }
         }
-        HTTP_GET_ASSETID: {
+        HTTP: {
           runAfter: {
             Execute_JavaScript_Code: [
               'Succeeded'
@@ -117,7 +118,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
             uri: 'http://tech-assessment.vnext.com.au/api/devices/assetId/'
           }
         }
-        HTTP_2_SAVE_TO_DB: {
+        HTTP_2: {
           runAfter: {
             Execute_JavaScript_Code_2: [
               'Succeeded'
@@ -127,7 +128,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
           inputs: {
             body: '@body(\'Execute_JavaScript_Code_2\')'
             method: 'POST'
-            uri: 'https://${workflowName}.azurewebsites.net/api/device'
+            uri: 'https://${functionAppName}.azurewebsites.net/api/device'
           }
         }
         Send_message: {
