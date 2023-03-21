@@ -5,10 +5,6 @@ param organization string = 'vnext-device'
 @secure()
 param administratorLoginPassword string
 
-@description('Provide the connectionString for service bus.')
-@secure()
-param serviceBusConnectionString string
-
 
 // Functions
 module functions 'module/functions.bicep' = {
